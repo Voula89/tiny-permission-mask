@@ -48,3 +48,10 @@ A common ops task is verifying that a file or directory has *at least* the permi
 - **File-type bits are ignored.** Only the permission and special bits (0o7777) of `st_mode` participate. A regular file and a directory with the same permission bits behave identically.
 - **Symlinks.** `check_path` follows symlinks by default (uses `os.stat`). Pass `follow_symlinks=False` to check the link itself with `os.lstat`.
 - **Special bits.** `SETUID`, `SETGID`, and `STICKY` are available as mask flags for callers that need to verify those.
+
+## Design notes
+
+The window stores values eagerly rather than keeping running aggregates. Running
+sums drift with floating point over long streams, and recomputing from a small
+buffer is cheap enough that the drift is not worth the speed.
+
